@@ -1,0 +1,67 @@
+
+vpath %.c $(SRCDIRS)
+vpath %.cpp $(SRCDIRS)
+vpath %.o $(OBJDIR)
+
+.PHONY : all objs clean cleanall rebuild link cleanout
+
+all : config $(PROGRAM)
+
+# Rules for producing the objects.
+#---------------------------------------------------
+objs : $(OBJS)
+
+%.o : %.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $< -o $(OBJDIR)$(notdir $@)
+
+%.o : %.cpp
+	@echo -e "building: $(notdir $@) \t please wait ..."
+	echo $(SOURCES)
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $(OBJDIR)$(notdir $@)
+
+# Rules for producing the executable.
+#----------------------------------------------
+$(PROGRAM) : $(OBJS)
+ifeq ($(findstring .a, $(PROGRAM)), .a)
+	$(AR) -rc $(PROGRAM) $(FULLOBJS)
+else ifeq ($(findstring .so, $(PROGRAM)), .so)
+	$(CXX) -o $(PROGRAM) -shared -fPIC $(FULLOBJS) $(INLIBS) $(LDFLAGS)
+else
+	$(CXX) -o $(PROGRAM) $(FULLOBJS) $(INLIBS) $(LDFLAGS)
+endif
+
+#-include $(DEPS)
+
+
+test:
+	@echo -e "objs: $(OBJS)"
+	@echo -e "all objs: $(FULLOBJS)"
+
+ifeq ($(DEBUG),1)
+config: dir
+else
+config: dir 
+endif
+
+dir:
+	@echo -e "making dir..."
+	mkdir -p $(OUTDIR)
+	mkdir -p $(DEBUG_DIR)
+	mkdir -p $(RELEASE_DIR)
+	mkdir -p $(PROGRAMDIR)
+
+rebuild: clean all
+
+link: cleanout all
+
+cleanout:
+	@$(RM) $(PROGRAM)
+
+clean :
+	@$(RM) $(FULLOBJS) 
+	@$(RM) $(DEPS) 
+
+cleanall: clean cleanout
+
+
+

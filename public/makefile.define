@@ -1,0 +1,48 @@
+#Õ®”√makefile
+#√¸¡Ó£
+#±‡“Î◊º±∏: make config
+#±‡“Îdebug∞Ê£∫make 
+#±‡“Îrelease∞Ê£∫
+# »ª∫Ûmake -e DEBUG=0
+#±‡“Îrelease◊ —∂∞Ê±æ
+# make -e DEBUG=0 PRO=E86
+
+ROOTDIR  := .
+MISCDIR  := ../misc
+APIDIR	 := ../thostapi
+CIFOXDIR := ../../../cifox
+BOOSTDIR := ../../../boost_1_60_0
+BOOSTLIBDIR := $(BOOSTDIR)/stage/linux/lib
+CIFOXLIBDIR := $(CIFOXDIR)/lib
+SRCDIRS := $(ROOTDIR)  
+SRCEXTS :=.cpp .c
+OUTDIR :=.
+DEBUG_DIR :=$(OUTDIR)/debug/
+RELEASE_DIR :=$(OUTDIR)/release$(PRO)/
+
+PROGRAMDIR := ../../product/quants/
+OBJDIR :=$(RELEASE_DIR)
+CPPFLAGS :=-g -DLINUX -fPIC
+#CPPFLAGS :=-g -DLINUX -DBOOST_LOCKFREE -DBOOST_COMMON_TYPE_DONT_USER_TYPEOF 
+#-DBOOST_THREAD_BUILD_DLL 
+INLIBS  := 
+LDFLAGS := -lpthread -L$(BOOSTLIBDIR) -lboost_system -lboost_filesystem -lboost_thread -lboost_signals 
+
+CPPFLAGS := $(CPPFLAGS) -I. -I$(BOOSTDIR)/
+
+CFLAGS :=
+CXXFLAGS := 
+
+CC  = gcc
+CXX = g++
+AR=ar
+
+RM = rm -f
+
+SHELL = /bin/sh
+FULLSOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
+SOURCES = $(notdir $(FULLSOURCES))
+OBJS = $(foreach x,$(SRCEXTS), $(patsubst %$(x),%.o,$(filter %$(x),$(SOURCES))))
+FULLOBJS = $(addprefix $(OBJDIR),$(OBJS))
+DEPS    = $(patsubst %.o,%.d,$(OBJS))
+

@@ -1,0 +1,7 @@
+50 19 * * 1-5 sh /home/quants/scripts/startkbarmanager.sh
+55 19 * * 1-5 sh /home/quants/scripts/starttickmanager.sh
+50 15 * * 1-5 sh /home/quants/scripts/stopkbarmanager.sh
+50 15 * * 1-5 sh /home/quants/scripts/stoptickmanager.sh
+30 16 * * 1-5 sh /home/quants/scripts/logbackup.sh
+00 16 * * 1-5 python -u /home/quants/scripts/dumpcsvfromredis.py > /home/quants/userdata/dumptickcsv.log 2>&1 &
+00 12 * * 6 python -u /home/quants/scripts/updateexpireinweekend.py > /home/quants/userdata/updateexpireinweekend.log 2>&1 &
